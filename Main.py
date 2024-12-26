@@ -11,12 +11,6 @@ with open("API_Keys.json","r") as API_file:
     Api_Key_DiscordBot= data["discord"]
 
 
-#Here i put the guilds file
-guilds_file= 'Database/Guilds.json'
-
-#importing needed libs
-import discord
-import json
 
 #intents say what the bot can and cant do
 #this is linked to the dev website
