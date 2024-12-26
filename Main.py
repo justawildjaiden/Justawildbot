@@ -47,12 +47,18 @@ async def on_ready():
         if guild.id not in data_id:
             data_id.append(guild.id)
             #create file for the guild
-            try:
-                file = open(f'Database/Guilds/{guild.id}.json', 'x')
-                file.write(' ')
-                file.close()
-            except:
-                pass
+            file = open(f'Database/Guilds/{guild.id}.json', 'w')
+            file.close()
+            member_data = {"members": {}}
+            with open(f'Database/Guilds/{guild.id}.json', 'w') as MemberFile:
+                memberdic = member_data["members"]
+                members = guild.fetch_members()
+                async for member in members:
+                    memberdic[member.id] = {"gag": None, "owner": None,
+                                            "restrains": {'arms': None, 'legs': None, 'neck': None,
+                                                          'hands': None, 'head': None,
+                                                          'suit': None, 'genitals': None}
+                        , "locked": None}
 
                 json.dump(member_data, MemberFile)
     print(in_guilds_id)
