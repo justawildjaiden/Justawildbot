@@ -18,6 +18,7 @@ with open("API_Keys.json","r") as API_file:
 intents = discord.Intents.all()
 
 
+
 #here we specify what command sign we want to use,
 #im planning on limiting this as much as possible to / commands
 bot = discord.Bot(intents = intents)
