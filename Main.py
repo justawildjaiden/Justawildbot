@@ -74,4 +74,5 @@ def start_cogs():
 #To the person that leaks the api key
 #I will and come and hunt you in your sleep
 start_cogs()
+print(bot.extensions)
 bot.run(Api_Key_DiscordBot)
