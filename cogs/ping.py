@@ -10,7 +10,9 @@ class Latency(discord.Cog): #makes a class for the cog that inherts from discord
     @discord.slash_command(description=f'Sends the latency of the bot', name=f'ping')
     async def latency_cmd(self, ctx):
         ping = round(self.bot.latency * 1000)
-        await ctx.respond(f"Pong! The latency is {ping}ms")
+        embed = discord.Embed(colour=discord.Colour.blue(), title=f'Pong!', type='rich',
+                              description=f'The latency is {ping}ms')
+        await ctx.respond(embed=embed)
         print(f'{ping}ms')
 
 def setup(bot): #this is called by the Pycord to set the cog up
