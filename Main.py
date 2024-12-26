@@ -39,6 +39,7 @@ async def on_ready():
         data = json.load(jsonFile)
     data_id = data['ids']
 
+    global in_guilds_id
     in_guilds_id = []
     print(f'the bot is in folowing guilds')
     #updates the list the bot is in, and creates a database file for the guild
