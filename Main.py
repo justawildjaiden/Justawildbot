@@ -46,6 +46,7 @@ async def on_ready():
         in_guilds_id.append(guild.id)
         if guild.id not in data_id:
             data_id.append(guild.id)
+            #create file for the guild
             try:
                 file = open(f'Database/Guilds/{guild.id}.json', 'x')
                 file.write(' ')
