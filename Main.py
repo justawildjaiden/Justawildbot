@@ -3,7 +3,7 @@ import discord
 import json
 
 #Here i put the file locations
-guilds_file= 'Database/Guilds.json'
+guilds_file= f'Database/Guilds.json'
 
 #Here I put the API key
 with open("API_Keys.json","r") as API_file:
