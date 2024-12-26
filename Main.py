@@ -41,6 +41,7 @@ async def on_ready():
 
     in_guilds_id = []
     print(f'the bot is in folowing guilds')
+    #updates the list the bot is in, and creates a database file for the guild
     for guild in bot.guilds:
         in_guilds_id.append(guild.id)
         if guild.id not in data_id:
@@ -71,4 +72,4 @@ def start_cogs():
 #To the person that leaks the api key
 #I will and come and hunt you in your sleep
 start_cogs()
-bot.run(Api_Key_Discordbot)
+bot.run(Api_Key_DiscordBot)
