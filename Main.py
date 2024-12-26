@@ -20,7 +20,7 @@ intents = discord.Intents.all()
 
 #here we specify what command sign we want to use,
 #im planning on limiting this as much as possible to / commands
-bot = discord.Bot()
+bot = discord.Bot(intents = intents)
 
 #this runs once the bot has been booted
 @bot.event
