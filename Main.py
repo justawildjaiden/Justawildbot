@@ -6,7 +6,9 @@ import json
 guilds_file= 'Database/Guilds.json'
 
 #Here I put the API key
-from unittest import skipUnless
+with open("API_Keys.json","r") as API_file:
+    data = json.load(API_file)
+    Api_Key_DiscordBot= data["discord"]
 
 Api_Key_Discordbot= f"MTMyMTgwMTc0MzEzNDM1OTU5Mg.G5JV8V.Vd51l7tjx3zH_91blo3WqQvNm5iHlmfKA3YFpo"
 
