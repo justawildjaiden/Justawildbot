@@ -10,7 +10,6 @@ with open("API_Keys.json","r") as API_file:
     data = json.load(API_file)
     Api_Key_DiscordBot= data["discord"]
 
-Api_Key_Discordbot= f"MTMyMTgwMTc0MzEzNDM1OTU5Mg.G5JV8V.Vd51l7tjx3zH_91blo3WqQvNm5iHlmfKA3YFpo"
 
 #Here i put the guilds file
 guilds_file= 'Database/Guilds.json'
