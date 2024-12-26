@@ -54,6 +54,7 @@ async def on_ready():
             except:
                 pass
 
+                json.dump(member_data, MemberFile)
     print(in_guilds_id)
 
     with open(guilds_file, 'w') as jsonFile:
