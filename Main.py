@@ -61,7 +61,7 @@ async def on_ready():
                                             "restrains": {'arms': None, 'legs': None, 'neck': None,
                                                           'hands': None, 'head': None,
                                                           'suit': None, 'genitals': None}
-                        , "locked": None}
+                        , "locked": None, "needtotalk":None}
 
                 json.dump(member_data, MemberFile)
     print(in_guilds_id)
