@@ -1,3 +1,10 @@
+#importing needed libs
+import discord
+import json
+
+#Here i put the file locations
+guilds_file= 'Database/Guilds.json'
+
 #Here I put the API key
 from unittest import skipUnless
 
