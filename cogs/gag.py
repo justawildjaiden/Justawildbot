@@ -7,6 +7,9 @@ import json
 global response_gag
 
 class GagTypes(discord.ui.View):
+    def __init__(self, target):
+        super().__init__()
+        self.target = target
 
     @discord.ui.select(
         placeholder= "Please select one",
@@ -31,18 +34,22 @@ class GagTypes(discord.ui.View):
             )
         ]
     )
-    async def select_callback(self, select, interation):    #once the user picked this get called
+    async def select_callback(self, select, interation):
         if select.values[0] == f'Ball gag':
-            response_gag = f'You picked a ball gag, hope they like balls xd'
+            response_gag = f'You picked a ball gag for {self.target.mention}, hope they like balls xd'
+
         elif select.values[0] == f'Tape gag':
-            response_gag = f'You tape their mouth shut, thats gonna hurt to take off'
+            response_gag = f'You tape {self.target.mention}\'s mouth shut, that\'s gonna hurt to take off'
+
         elif select.values[0] == f'Sock':
-            response_gag = f'You stuff their mouth with a sock, I hope its clean'
+            response_gag = f'You stuff {self.target.mention}\'s mouth with a sock, I hope it\'s clean'
+
         elif select.values[0] == f'Dildo gag':
-            response_gag = f'You shove a dildo in their mouth, they better get sucking'
+            response_gag = f'You shove a dildo in {self.target.mention}\'s mouth, they better get sucking'
         embed = discord.Embed(colour=discord.Colour.green(), title=f'Gag', type='rich',
                               description=f'{response_gag}')
         await interation.response.send_message(embed= embed, ephemeral = True, delete_after= 30)
+
 
 class Gagging(discord.Cog): #makes a class for the cog that inherts from discord.Cog
     #cogs are used to add functions to the bot, like a module
@@ -58,7 +65,7 @@ class Gagging(discord.Cog): #makes a class for the cog that inherts from discord
                        target:discord.Option(discord.User,name= f'subject', description= f'who do you want to gag', required= True)):
         embed = discord.Embed(colour=discord.Colour.blue(),title=f'Gag',type='rich')
         embed.add_field(name=f'Target',value=f'<@{target.id}>')
-        await ctx.respond(embed=embed, view=GagTypes())
+        await ctx.respond(embed=embed, view=GagTypes(target=target, timeout=30))
         return
 
 def setup(bot): #this is called by the Pycord to set the cog up
