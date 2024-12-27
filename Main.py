@@ -75,7 +75,7 @@ async def on_ready():
 #this adds all the cogs to the bot
 def start_cogs():
     #this is a list off all the cogs
-    cogs_list = [
+    cogs_list = {
         'ping',
         'owner'
     ]
