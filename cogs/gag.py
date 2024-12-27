@@ -81,9 +81,37 @@ class GagTypes(discord.ui.View):
         """Changes the gag for the target user in the JSON file.
 
         Args:
-            select: The select menu option chosen.
+            select: The select option containing the new gag.
         """
-        # ... (Your existing change_gag function remains unchanged)
+
+        filepath = f'C:/Users/Jaide/Discord-Bot/Database/Guilds/{self.guild}.json'
+        try:
+            with open(filepath, 'r') as f:
+                data = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:  # Combined exception handling
+            print(f"Error reading from file: {e}")
+            return False
+
+        try:
+            target_id_str = str(self.target.id)
+            if 'members' not in data:
+                data['members'] = {}  # initializes 'members' if it's missing
+            if target_id_str not in data['members']:
+                data['members'][target_id_str] = {}
+
+            data['members'][target_id_str]['gag'] = select.values[0]
+
+        except Exception as e:  # Catches any errors during data manipulation
+            print(f"Error updating gag data: {e}")
+            return False
+
+        try:
+            with open(filepath, 'w') as f:
+                json.dump(data, f, indent=4)
+            return True
+        except Exception as e:  # Catches any errors during file writing
+            print(f"Error writing to file: {e}")
+            return False
 
 
 class Gagging(discord.Cog):
