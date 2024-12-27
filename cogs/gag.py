@@ -1,24 +1,17 @@
-from http.client import responses
-from re import match
-
 import discord
 import json
 
-global response_gag
-
 class GagTypes(discord.ui.View):
-    def __init__(self, target):
+    def __init__(self, target=None,timeout=None,author=None,response_gag=None,guild=None):
         super().__init__()
         self.target = target
         self.timeout= timeout
         self.author = author
+        self.response_gag = response_gag
+        self.guild = guild
 
     async def on_timeout(self):
         self.disable_all_items()
-        embed = discord.Embed(colour=discord.Colour.red(), title=f'timeout', type='rich',
-                              description=f'You took to long')
-        await self.message.edit(embed=embed,view=self)
-
 
     @discord.ui.select(
         placeholder= "Please select one",
@@ -45,20 +38,62 @@ class GagTypes(discord.ui.View):
     )
     async def select_callback(self, select, interation):
         if select.values[0] == f'Ball gag':
-            response_gag = f'You picked a ball gag for {self.target.mention}, hope they like balls xd'
+            self.response_gag = f'{self.author.mention} picked a ball gag for {self.target.mention}, hope they like balls xd'
 
         elif select.values[0] == f'Tape gag':
-            response_gag = f'You tape {self.target.mention}\'s mouth shut, that\'s gonna hurt to take off'
+            self.response_gag = f'{self.author.mention} tapes {self.target.mention}\'s mouth shut, that\'s gonna hurt to take off'
 
         elif select.values[0] == f'Sock':
-            response_gag = f'You stuff {self.target.mention}\'s mouth with a sock, I hope it\'s clean'
+            self.response_gag = f'{self.author.mention} stuffs {self.target.mention}\'s mouth with a sock, I hope it\'s clean'
 
         elif select.values[0] == f'Dildo gag':
-            response_gag = f'You shove a dildo in {self.target.mention}\'s mouth, they better get sucking'
-        embed = discord.Embed(colour=discord.Colour.green(), title=f'Gag', type='rich',
-                              description=f'{response_gag}')
-        await interation.response.send_message(embed= embed, ephemeral = True, delete_after= 30)
+            self.response_gag = f'{self.author.mention} shoves a dildo in {self.target.mention}\'s mouth, they better get sucking'
 
+        if self.change_gag(select):
+            embed = discord.Embed(colour=discord.Colour.green(), title=f'Gag', type='rich',
+                                  description=f'{self.response_gag}')
+            await interation.response.send_message(embed= embed, ephemeral = False)
+        else:
+            embed = discord.Embed(colour=discord.Colour.red(), title=f'ERROR', type='rich',
+                                  description=f'Changing gag error, try aigan if that fails, contact dev')
+            await interation.response.send_message(embed=embed, ephemeral=True)
+
+    def change_gag(self, select):  # Updated change_gag function
+        try:
+            filepath = f'C:/Users/Jaide/Discord-Bot/Database/Guilds/{self.guild}.json'
+            with open(filepath, 'r') as f:
+                data = json.load(f)
+        except FileNotFoundError:
+            print(f"Error: File not found: {filepath}")
+            return False
+        except json.JSONDecodeError:
+            print(f"Error: Invalid JSON in file: {filepath}")
+            return False
+
+        try:
+            target_id_str = str(self.target.id)
+            if 'members' not in data:
+                print(f"Error: 'members' key not found in JSON data.")
+                return False
+            if target_id_str not in data['members']:
+                data['members'][target_id_str] = {}
+
+            data['members'][target_id_str]['gag'] = select.values[0]
+
+        except KeyError as e:
+            print(f"Error: Key not found in JSON: {e}")
+            return False
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            return False
+
+        try:
+            with open(filepath, 'w') as f:
+                json.dump(data, f, indent=4)
+            return True
+        except Exception as e:
+            print(f"Error writing to file: {e}")
+            return False
 
 class Gagging(discord.Cog): #makes a class for the cog that inherts from discord.Cog
     #cogs are used to add functions to the bot, like a module
@@ -74,7 +109,7 @@ class Gagging(discord.Cog): #makes a class for the cog that inherts from discord
                        target:discord.Option(discord.User,name= f'subject', description= f'who do you want to gag', required= True)):
         embed = discord.Embed(colour=discord.Colour.blue(),title=f'Gag',type='rich')
         embed.add_field(name=f'Target',value=f'<@{target.id}>')
-        await ctx.respond(embed=embed, view=GagTypes(target=target, timeout=30))
+        await ctx.respond(embed=embed, view=GagTypes(target=target, timeout=30,author=ctx.author,guild=ctx.guild.id), ephemeral = True, delete_after= 30)
         return
 
 def setup(bot): #this is called by the Pycord to set the cog up
