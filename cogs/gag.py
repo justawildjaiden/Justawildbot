@@ -10,6 +10,15 @@ class GagTypes(discord.ui.View):
     def __init__(self, target):
         super().__init__()
         self.target = target
+        self.timeout= timeout
+        self.author = author
+
+    async def on_timeout(self):
+        self.disable_all_items()
+        embed = discord.Embed(colour=discord.Colour.red(), title=f'timeout', type='rich',
+                              description=f'You took to long')
+        await self.message.edit(embed=embed,view=self)
+
 
     @discord.ui.select(
         placeholder= "Please select one",
