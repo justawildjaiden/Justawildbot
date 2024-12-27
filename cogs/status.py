@@ -1,35 +1,85 @@
 import discord
 import json
 
-#the location of the guilds folder
-folder_location= "C:/Users/Jaide/Discord-Bot/Database/Guilds"
+# Location of the guilds folder
+folder_location = "C:/Users/Jaide/Discord-Bot/Database/Guilds"
 
-class status(discord.Cog): #makes a class for the cog that inherts from discord.Cog
-    #cogs are used to add functions to the bot, like a module
 
-    def __init__(self,bot): #this method is called when the bot is loaded
+class status(discord.Cog):
+    """Cog for displaying the status of a user."""
+
+    def __init__(self, bot):
+        """Initializes the cog with the bot instance."""
         self.bot = bot
 
-    @discord.slash_command(description=f'See the status of the Person', name=f'status', nsfw= True, context= 'guild')
+    @discord.slash_command(description="See the status of the Person", name="status", nsfw=True, context='guild')
     async def status(self,
-                     ctx:discord.ApplicationContext,
-                     target:discord.Option(discord.User ,required=True, name= f'subject', description=f'mention who you want to see the status of!')):
-        with open(f"{folder_location}.json", 'r') as jsonFile:
-            data = json.load(jsonFile)
-            ids_list = data['ids']
-            if ctx.guild.id not in ids_list:
-                embed = discord.Embed(colour=discord.Colour.red(), title=f'ERROR', type='rich',
-                                      description=f'Contact dev,\n tell the dev that the guild id isnt procesed in to the storage')
-                await ctx.respond(embed=embed)
-        with open(f'{folder_location}/{ctx.guild.id}.json','r') as jsonFile:
-            data = json.load(jsonFile)
-            data_user = data['members'][f'{target.id}']
+                     ctx: discord.ApplicationContext,
+                     target: discord.Option(discord.User, required=True, name='subject',
+                                            description='Mention who you want to see the status of!')):
+        """
+        Slash command to display the status of a mentioned user.
+
+        Args:
+            ctx: The application context.
+            target: The Discord user whose status is to be displayed.
+        """
+
+        guilds_filepath = f"{folder_location}.json"  # corrected file path
+
+        try:
+            with open(guilds_filepath, 'r') as f:
+                guild_data = json.load(f)
+        except FileNotFoundError:
+            print(f"Error: Guilds file not found: {guilds_filepath}")  # More helpful debug message
+            embed = discord.Embed(colour=discord.Colour.red(), title="ERROR",
+                                  description="Guild data file not found. Please contact the developer.")
+            await ctx.respond(embed=embed)
+            return  # Stop processing if the file isn't found
+
+        except json.JSONDecodeError:
+            print(f"Error: Invalid JSON in guilds file: {guilds_filepath}")
+            embed = discord.Embed(colour=discord.Colour.red(), title="ERROR",
+                                  description="Invalid guild data. Please contact the developer.")
+            await ctx.respond(embed=embed)
+            return
+
+        ids_list = guild_data.get('ids', [])  # Use .get() to handle missing 'ids' key
+        if ctx.guild.id not in ids_list:
+            embed = discord.Embed(colour=discord.Colour.red(), title="ERROR",
+                                  description="This guild is not registered. Please contact the developer.")
+            await ctx.respond(embed=embed)
+            return
+
+        members_filepath = f'{folder_location}/{ctx.guild.id}.json'
+        try:
+            with open(members_filepath, 'r') as f:
+                member_data = json.load(f)
+        except FileNotFoundError:
+            print(f"Error: Member data file not found: {members_filepath}")
+            embed = discord.Embed(colour=discord.Colour.red(), title="ERROR",
+                                  description="Member data file not found. Please contact the developer.")
+            await ctx.respond(embed=embed)
+            return
+        except json.JSONDecodeError:
+            print(f"Error: Invalid JSON in member data file: {members_filepath}")
+            embed = discord.Embed(colour=discord.Colour.red(), title="ERROR",
+                                  description="Invalid member data. Please contact the developer.")
+            await ctx.respond(embed=embed)
+            return
+
+        try:
+            target_id_str = str(target.id)  # convert to string for dictionary key
+            data_user = member_data['members'][target_id_str]
             await ctx.respond(f'{data_user}')
-            data= None
-            data_user= None
+
+        except KeyError as e:
+            print(f"Error: Key not found in member data: {e}")
+            embed = discord.Embed(colour=discord.Colour.red(), title="ERROR",
+                                  description=f"User data not found. {e}")  # More informative error message
+            await ctx.respond(embed=embed)
 
 
-
-
-def setup(bot): #this is called by the Pycord to set the cog up
+def setup(bot):
+    """Loads the cog."""
     bot.add_cog(status(bot))

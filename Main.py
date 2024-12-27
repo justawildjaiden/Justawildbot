@@ -1,78 +1,81 @@
-#importing needed libs
+# Importing necessary libraries
 from typing import Any
-
 import discord
 import json
 
-#Here i put the file locations
-guilds_file= f'Database/Guilds.json'
+# File locations
+guilds_file = f'Database/Guilds.json'
 
-#Here I put the API key
-with open("API_Keys.json","r") as API_file:
+# API Key retrieval
+with open("API_Keys.json", "r") as API_file:
     data = json.load(API_file)
-    Api_Key_DiscordBot= data["discord"]
+    Api_Key_DiscordBot = data["discord"]
 
-
-
-#intents say what the bot can and cant do
-#this is linked to the dev website
-#once the bot gets in 100+ servers I need to verify i
+# Define bot intents (permissions)
+# Important for bots in 100+ servers (requires verification)
 intents = discord.Intents.all()
 
+# Create bot instance
+bot = discord.Bot(intents=intents)
 
 
-#here we specify what command sign we want to use,
-#im planning on limiting this as much as possible to / commands
-bot = discord.Bot(intents = intents)
-
-#this runs once the bot has been booted
+# Event triggered when the bot is ready
 @bot.event
 async def on_ready():
-
     print('-----')
     print(f"Logged in as")
     print(bot.user.name)
     print(bot.user.id)
     print('-----')
 
-    #open the guilds database
+    # Load guild data
     with open(guilds_file, "r") as jsonFile:
-
-        #convert the json to dic
         data = json.load(jsonFile)
     data_id = data['ids']
 
+    # Initialize list of guild IDs the bot is currently in
     global in_guilds_id
     in_guilds_id = []
-    print(f'the bot is in folowing guilds')
-    #updates the list the bot is in, and creates a database file for the guild
+    print(f'The bot is in the following guilds:')
+
+    # Iterate through guilds the bot is in
     for guild in bot.guilds:
         in_guilds_id.append(guild.id)
+        # Check if guild is already in the database
         if guild.id not in data_id:
+            # Add new guild to the database
             data_id.append(guild.id)
+            print(f"Adding new guild: {guild.id}")  # Indicate new guild added
 
-            #create file for the guild
-            file = open(f'Database/Guilds/{guild.id}.json', 'w')
-            file.close()
+            # Create a new file for the guild
+            try:  # Added error handling in case file creation fails.
+                with open(f'Database/Guilds/{guild.id}.json', 'x') as MemberFile:  # 'x' mode for exclusive creation
+                    pass  # File created, nothing more to do here. 'x' mode ensures no overwrite.
+            except FileExistsError:  # Handle the case where file already exists.
+                print(f"Database file for guild {guild.id} already exists.")
+
+            # Initialize member data for the guild
             member_data = {"members": {}}
-            with open(f'Database/Guilds/{guild.id}.json', 'w') as MemberFile:
+            with open(f'Database/Guilds/{guild.id}.json', 'w') as MemberFile:  # 'w' mode to write data.
                 memberdic = member_data["members"]
                 members = guild.fetch_members()
                 async for member in members:
-                    memberdic[member.id] = {"gag": None, "owner": None,"restrains": {'arms': None, 'legs': None, 'neck': None,
+                    memberdic[member.id] = {"gag": None, "owner": None,
+                                            "restrains": {'arms': None, 'legs': None, 'neck': None,
                                                           'hands': None, 'head': None,
-                                                          'suit': None, 'genitals': None} ,"locked": None, "needtotalk":None}
+                                                          'suit': None, 'genitals': None}, "locked": None,
+                                            "needtotalk": None}
+                json.dump(member_data, MemberFile, indent=4)  # Added indent for readability
 
-                json.dump(member_data, MemberFile)
     print(in_guilds_id)
 
+    # Save updated guild data
     with open(guilds_file, 'w') as jsonFile:
-        json.dump(data, jsonFile)
+        json.dump(data, jsonFile, indent=4)  # Added indent for readability
 
 
-#this adds all the cogs to the bot
+# Function to load cogs (extensions)
 def start_cogs():
-    #this is a list off all the cogs
     cogs_list = {
         'ping',
         'status',
@@ -81,9 +84,8 @@ def start_cogs():
     for cog in cogs_list:
         bot.load_extension(f'cogs.{cog}')
 
-#This actually starts up the bot
-#To the person that leaks the api key
-#I will and come and hunt you in your sleep
+
+# Start the bot
 start_cogs()
 print(bot.extensions)
 bot.run(Api_Key_DiscordBot)

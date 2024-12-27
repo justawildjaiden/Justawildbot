@@ -1,21 +1,28 @@
 import discord
-from discord import DMChannel
 
 
-class Latency(discord.Cog): #makes a class for the cog that inherts from discord.Cog
-    #cogs are used to add functions to the bot, like a module
+class Latency(discord.Cog):
+    """Cog for measuring and displaying bot latency."""
 
-    def __init__(self,bot): #this method is called when the bot is loaded
+    def __init__(self, bot):
+        """Initializes the cog with the bot instance."""
         self.bot = bot
-    # this command responds with the latency of the bot
 
-    @discord.slash_command(description=f'Sends the latency of the bot', name=f'ping')
-    async def latency_cmd(self, ctx):
-        ping = round(self.bot.latency * 1000)
-        embed = discord.Embed(colour=discord.Colour.blue(), title=f'Pong!', type='rich',
-                              description=f'The latency is {ping}ms')
+    @discord.slash_command(description="Sends the latency of the bot", name="ping")
+    async def latency_cmd(self, ctx: discord.ApplicationContext):
+        """
+        Slash command to measure and respond with the bot's latency.
+
+        Args:
+            ctx: The application context.
+        """
+        latency_ms = round(self.bot.latency * 1000)
+        embed = discord.Embed(colour=discord.Colour.blue(), title="Pong!",
+                              description=f"The latency is {latency_ms}ms")
         await ctx.respond(embed=embed)
-        print(f'{ping}ms')
+        print(f"{latency_ms}ms")
 
-def setup(bot): #this is called by the Pycord to set the cog up
+
+def setup(bot):
+    """Loads the cog."""
     bot.add_cog(Latency(bot))
