@@ -77,8 +77,9 @@ def start_cogs():
     #this is a list off all the cogs
     cogs_list = {
         'ping',
-        'owner'
-    ]
+        'status',
+        'gag'
+    }
     for cog in cogs_list:
         bot.load_extension(f'cogs.{cog}')
 
