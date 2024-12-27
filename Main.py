@@ -70,8 +70,12 @@ async def on_ready():
     print(in_guilds_id)
 
     # Save updated guild data
-    with open(guilds_file, 'w') as jsonFile:
-        json.dump(data, jsonFile, indent=4)  # Added indent for readability
+    try:
+        with open(guilds_file, 'w') as jsonFile:
+            json.dump(data, jsonFile, indent=4)  # Added indent for readability
+    except:
+        print(f'Error saving the guild list')
+        quit()
 
 
 # Function to load cogs (extensions)
