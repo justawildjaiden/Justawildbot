@@ -29,9 +29,14 @@ async def on_ready():
     print('-----')
 
     # Load guild data
-    with open(guilds_file, "r") as jsonFile:
-        data = json.load(jsonFile)
-    data_id = data['ids']
+    try:
+        with open(guilds_file, "r") as jsonFile:
+            data = json.load(jsonFile)
+        data_id = data['ids']
+    except:
+        print(f'Error loading the guild list')
+        quit()
+
 
     # Initialize list of guild IDs the bot is currently in
     global in_guilds_id
