@@ -90,15 +90,21 @@ class Gagging(discord.Cog):
 
         # Modifies the user's gag data based on the provided gag type and efect
         if gag_type == "Unequip":
-            user_gag_data['gag_type'] = None    # Sets the type to None
-            user_gag_data['gag_effect'] = None  # Sets the effect to None
+            user_gag_data['type'] = None    # Sets the type to None
+            user_gag_data['effect'] = None  # Sets the effect to None
+            user_need_data = False          # Sets the need to talk for to False
         else:
             user_gag_data['gag_type'] = gag_type
             # If the gag effect is "faux", set the effect to None.
+            # and changes the need to be talked for to false
             if gag_effect == "faux":
-                user_gag_data['gag_effect'] = None
+                user_gag_data['effect'] = None
+                user_need_data = False
+
+            #sets the gag_effect and set need to talk to true
             else:
-                user_gag_data['gag_effect'] = gag_effect
+                user_gag_data['effect'] = gag_effect
+                user_need_data = True
 
         # Attempts to write the updated guild data back to the JSON file
         try:
