@@ -1,7 +1,8 @@
 import discord
 import json
 
-
+#Defining the file locations
+file_location = "C:/Users/Jaide/Discord-Bot/Database/Guilds"
 
 class Gagging(discord.Cog):
     """Cog for gagging commands."""
