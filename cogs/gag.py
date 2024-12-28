@@ -73,8 +73,17 @@ class Gagging(discord.Cog):
                                              name=f'reason',
                                              description=f'not required')
                   ):
-        await ctx.respond(f'Gagging {target} with {gag_type} and {gag_effect}')
-        return None
+        """
+                Applies a gag to the specified user.
+
+                Args:
+                    ctx: The application context.
+                    target: The user to gag.
+                    gag_type: The type of gag to apply.
+                    gag_effect: The effect of the gag.
+                    gag_reason: The reason for gagging the user (optional).
+                """
+
 
 def setup(bot):
     """Loads the gagging cog."""
