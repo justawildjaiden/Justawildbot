@@ -189,9 +189,20 @@ class Gagging(discord.Cog):
             # Add an optional field for the gag reason if provided
             if gag_reason is not None:
                 embed.add_field(name="Why?", value=str(gag_reason), inline=False)
-            # Set the thumbnail and footer of the embed
-            embed.set_thumbnail(url=target.avatar.url)
-            embed.set_footer(text=f"Requested by {ctx.author.name}", icon_url=ctx.author.avatar.url)
+            # Set the thumbnail of the embed using the target's avatar, if available
+            if ctx.author.avatar is not None:
+                try:
+                    embed.set_thumbnail(url=target.avatar.url)
+                except:
+                    nothing = None  # Placeholder for error handling, no action taken
+
+            # Set the footer of the embed using the author's avatar and name, if available
+            if ctx.author.avatar is not None:
+                try:
+                    embed.set_footer(text=f"Requested by {ctx.author.name}", icon_url=ctx.author.avatar.url)
+                except:
+                    embed.set_footer(text=f"Requested by {ctx.author.name}")  # Fallback in case the avatar URL fails
+            
             # Respond with the embed message
             await ctx.respond(embed=embed)
             return None
