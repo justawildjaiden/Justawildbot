@@ -1,3 +1,4 @@
+#Importing dependecies
 import discord
 import json
 
