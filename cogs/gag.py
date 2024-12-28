@@ -161,10 +161,39 @@ class Gagging(discord.Cog):
                     gag_reason: The reason for gagging the user (optional).
                 """
 
-        if changegag(ctx, gag_type, gag_effect, target):
-            if gag_type is not "Unequip":
-                ctx.respond(f'gaged {target.mention}')
-                return None
+        # If the gag was successfully changed
+        if self.changegag(ctx, gag_type, gag_effect, target):
+            # If the gag type is not "Unequip" (meaning a gag is being applied)
+            if gag_type != "Unequip":
+                # Create an embed message to display the gag application
+                embed = discord.Embed(
+                    color=discord.Color.blurple(),
+                    title=f'**Gag**',
+                    description=f'{ctx.message.author.mention} puts a gag on {target.mention}',
+                    timestamp=ctx.message.created_at
+                )
+                # Add fields for gag type and effect
+                embed.add_field(name="what type?", value=str(gag_type), inline=True)
+                embed.add_field(name="How tight?", value=str(gag_effect), inline=True)
+
+            # If the gag type is "Unequip" (meaning a gag is being removed)
+            elif gag_type == "Unequip":
+                # Create an embed message to display the gag removal
+                embed = discord.Embed(
+                    color=discord.Color.blurple(),
+                    title=f'**Gag**',
+                    description=f'{ctx.message.author.mention} takes the gag of {target.mention}',
+                    timestamp=ctx.message.created_at
+                )
+            # Add an optional field for the gag reason if provided
+            if gag_reason is not None:
+                embed.add_field(name="Why?", value=str(gag_reason), inline=False)
+            # Set the thumbnail and footer of the embed
+            embed.set_thumbnail(url=target.avatar.url)
+            embed.set_footer(text=f"Requested by {ctx.author.name}", icon_url=ctx.author.avatar.url)
+            # Respond with the embed message
+            await ctx.respond(embed=embed)
+            return None
 
             elif gag_type is "Unequip":
                 ctx.respond(f'ungaged {target.mention}')
