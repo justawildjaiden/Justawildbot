@@ -10,7 +10,7 @@ class Gagging(discord.Cog):
         """Initializes the gagging cog."""
         self.bot = bot
 
-    async def get_gag_levels(self, ctx: discord.AutocompleteContext):
+    async def get_gag_levels(ctx: discord.ApplicationContext):
         """
         Depending on what type of gag you put on the user, you get different options of effects
         """
