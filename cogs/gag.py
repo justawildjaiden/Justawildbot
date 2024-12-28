@@ -200,7 +200,13 @@ class Gagging(discord.Cog):
                 return None
 
         else:
-            ctx.respond(f'gag failed, try again else contact the developer')
+            # Create an error embed message
+            embed = discord.Embed(colour=discord.Colour.red(), title="ERROR",
+                                  description=f'Something went wrong, please try again.\n{None
+                                  }             If it keeps happening contact the developer.')
+            # Respond with the error embed
+            await ctx.respond(embed=embed)
+            # Print an error message to the console
             print(f'changegag failed for {target.mention} by {ctx.author.mention}')
             return None
 
