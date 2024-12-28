@@ -5,7 +5,7 @@ import json
 file_location = "C:/Users/Jaide/Discord-Bot/Database/Guilds"
 
 class Gagging(discord.Cog):
-    """Cog for gagging commands."""
+    """Cog for gagging commands (NSFW)."""
 
     def __init__(self, bot):
         """Initializes the gagging cog."""
