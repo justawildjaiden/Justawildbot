@@ -94,7 +94,7 @@ class Gagging(discord.Cog):
             user_gag_data['effect'] = None  # Sets the effect to None
             user_need_data = False          # Sets the need to talk for to False
         else:
-            user_gag_data['gag_type'] = gag_type
+            user_gag_data['type'] = gag_type
             # If the gag effect is "faux", set the effect to None.
             # and changes the need to be talked for to false
             if gag_effect == "faux":
