@@ -49,6 +49,7 @@ class Gagging(discord.Cog):
                                          description="who do you want to gag"),
                   gag_type: discord.Option(str,
                                            choices=[
+                                                        "Unequip",
                                                         "Ball gag",
                                                         "Dildo gag",
                                                         "Ring gag",
