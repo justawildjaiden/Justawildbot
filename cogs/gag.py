@@ -89,8 +89,8 @@ class Gagging(discord.Cog):
 
         # Modifies the user's gag data based on the provided gag type and efect
         if gag_type == "Unequip":
-            user_gag_data['gag_type'] = "Unequip"
-            user_gag_data['gag_effect'] = None  # Sets the effect to None when unequipping
+            user_gag_data['gag_type'] = None    # Sets the type to None
+            user_gag_data['gag_effect'] = None  # Sets the effect to None
         else:
             user_gag_data['gag_type'] = gag_type
             # If the gag effect is "faux", set the effect to None.
