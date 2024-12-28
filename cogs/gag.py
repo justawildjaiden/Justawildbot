@@ -14,8 +14,13 @@ class Gagging(discord.Cog):
         """
         Depending on what type of gag you put on the user, you get different options of effects
         """
-        gag_type = ctx.options['gag_type']
-        if gag_type == "Ball gag":
+        # Get the gag type from user input
+        gag_type = ctx.options['type']
+
+        # Return a list of gag effects based on the gag type
+        if gag_type == "Unequip":
+            return ["None"]
+        elif gag_type == "Ball gag":
             return ["loose", "tight", "extreme", "faux"]
         elif gag_type == "Dildo gag":
             return ["N/A", "faux"]
