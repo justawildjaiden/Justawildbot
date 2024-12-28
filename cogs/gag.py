@@ -40,6 +40,70 @@ class Gagging(discord.Cog):
         else:
             return []
 
+    async def changegag(self,
+                        ctx: discord.ApplicationContext,
+                        gag_type:str,
+                        gag_effect:str,
+                        target:discord.abc.User):
+        """
+            This function changes the gag of the user that is being targeted.
+            It saves this information to the database.
+
+            Args:
+                ctx: The application context.
+                gag_type: The type of gag to apply.
+                gag_effect: The effect of the gag.
+                target: The user to gag.
+
+            Returns:
+                bool: True if the gag was successfully changed, False otherwise.
+        """
+
+        # Attempts to open and read the guild's JSON file
+        try:
+            with open(f'{file_location}/{ctx.guild.id}.json', "r") as f:
+                guild_data = json.load(f)
+
+            # Accesses the user's gag data within the guild data
+            user_gag_data = guild_data['members'][str(target.id)]['gag']
+
+        # Handles file not found and JSON decode errors
+        except FileNotFoundError:
+            print(f"Error: Member data file not found. guild:{ctx.guild.id} id:{target.id} ")
+            return False
+        except json.JSONDecodeError:
+            print(f"Error: Invalid JSON in member data file. guild:{ctx.guild.id} id:{target.id}")
+            return False
+
+        # Modifies the user's gag data based on the provided gag type and efect
+        if gag_type == "Unequip":
+            user_gag_data['gag_type'] = "Unequip"
+            user_gag_data['gag_effect'] = None  # Sets the effect to None when unequipping
+        else:
+            user_gag_data['gag_type'] = gag_type
+            # If the gag effect is "faux", set the effect to None.
+            if gag_effect == "faux":
+                user_gag_data['gag_effect'] = None
+            else:
+                user_gag_data['gag_effect'] = gag_effect
+
+        # Attempts to write the updated guild data back to the JSON file
+        try:
+            with open(f'{file_location}/{ctx.guild.id}.json', "w") as f:
+                json.dump(guild_data, f, indent=4)
+
+        # Handles file not found and JSON decode errors during write operation
+        except FileNotFoundError:
+            print(f"Error: Member data file not found. guild:{ctx.guild.id} id:{target.id} ")
+            return False
+        except json.JSONDecodeError:
+            print(f"Error: Invalid JSON in member data file. guild:{ctx.guild.id} id:{target.id}")
+            return False
+
+        return True
+
+
+
     @discord.slash_command(description="gags the mentioned user", name="gag", context='guild', nsfw=True)
     async def gag(self,
                   ctx: discord.ApplicationContext,
