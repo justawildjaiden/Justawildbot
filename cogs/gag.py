@@ -148,7 +148,8 @@ class Gagging(discord.Cog):
                   gag_reason: discord.Option(str,
                                              required=False,
                                              name=f'reason',
-                                             description=f'not required')
+                                             description=f'not required',
+                                             default=None)
                   ):
         """
                 Applies a gag to the specified user.
