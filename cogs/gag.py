@@ -195,10 +195,7 @@ class Gagging(discord.Cog):
             await ctx.respond(embed=embed)
             return None
 
-            elif gag_type is "Unequip":
-                ctx.respond(f'ungaged {target.mention}')
-                return None
-
+        # If the gag change failed
         else:
             # Create an error embed message
             embed = discord.Embed(colour=discord.Colour.red(), title="ERROR",
