@@ -1,6 +1,7 @@
 #Importing dependecies
-import discord
 import json
+
+import discord
 
 #Defining the file locations
 file_location = "C:/Users/Jaide/Discord-Bot/Database/Guilds"
@@ -79,6 +80,7 @@ class Gagging(discord.Cog):
 
             # Accesses the user's gag data within the guild data
             user_gag_data = guild_data['members'][str(target.id)]['gag']
+            user_need_data = guild_data['members'][str(target.id)]['needtotalk']
 
         # Handles file not found and JSON decode errors
         except FileNotFoundError:
@@ -169,15 +171,14 @@ class Gagging(discord.Cog):
                 """
 
         # If the gag was successfully changed
-        if self.changegag(ctx, gag_type, gag_effect, target):
+        if await self.changegag(ctx, gag_type, gag_effect, target):
             # If the gag type is not "Unequip" (meaning a gag is being applied)
             if gag_type != "Unequip":
                 # Create an embed message to display the gag application
                 embed = discord.Embed(
                     color=discord.Color.blurple(),
                     title=f'**Gag**',
-                    description=f'{ctx.message.author.mention} puts a gag on {target.mention}',
-                    timestamp=ctx.message.created_at
+                    description=f'{ctx.author.mention} puts a gag on {target.mention}'
                 )
                 # Add fields for gag type and effect
                 embed.add_field(name="what type?", value=str(gag_type), inline=True)
@@ -188,9 +189,8 @@ class Gagging(discord.Cog):
                 # Create an embed message to display the gag removal
                 embed = discord.Embed(
                     color=discord.Color.blurple(),
-                    title=f'**Gag**',
-                    description=f'{ctx.message.author.mention} takes the gag of {target.mention}',
-                    timestamp=ctx.message.created_at
+                    title=f'**Ungag**',
+                    description=f'{ctx.author.mention} takes the gag of {target.mention}'
                 )
             # Add an optional field for the gag reason if provided
             if gag_reason is not None:
