@@ -56,13 +56,13 @@ class status(discord.Cog):
             with open(members_filepath, 'r') as f:
                 member_data = json.load(f)
         except FileNotFoundError:
-            print(f"Error: Member data file not found: {members_filepath}")
+            print(f"Error: Member data file not found. guild:{ctx.guild.id} id:{target.id} ")
             embed = discord.Embed(colour=discord.Colour.red(), title="ERROR",
                                   description="Member data file not found. Please contact the developer.")
             await ctx.respond(embed=embed)
             return
         except json.JSONDecodeError:
-            print(f"Error: Invalid JSON in member data file: {members_filepath}")
+            print(f"Error: Invalid JSON in member data file. guild:{ctx.guild.id} id:{target.id}")
             embed = discord.Embed(colour=discord.Colour.red(), title="ERROR",
                                   description="Invalid member data. Please contact the developer.")
             await ctx.respond(embed=embed)
