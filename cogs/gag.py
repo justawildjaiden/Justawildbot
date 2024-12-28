@@ -36,6 +36,8 @@ class Gagging(discord.Cog):
             return ["not_applicable", "faux"]
         elif gag_type == "Underwear":
             return ["loose", "tight", "faux"]
+        else:
+            return []
 
     @discord.slash_command(description="gags the mentioned user", name="gag", context='guild', nsfw=True)
     async def gag(self,
