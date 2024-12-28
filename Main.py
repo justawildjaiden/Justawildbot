@@ -65,11 +65,11 @@ async def on_ready():
                 memberdic = member_data["members"]
                 members = guild.fetch_members()
                 async for member in members:
-                    memberdic[member.id] = {"gag": {"type":None, "level":None}, "owner": None,
+                    memberdic[member.id] = {"gag": {"type":None, "effect":None}, "owner": None,
                                             "restrains": {'arms': None, 'legs': None, 'neck': None,
                                                           'hands': None, 'head': None,
                                                           'suit': None, 'genitals': None}, "locked": None,
-                                            "needtotalk": None}
+                                            "needtotalk": False}
                 json.dump(member_data, MemberFile, indent=4)  # Added indent for readability
 
     print(in_guilds_id)
