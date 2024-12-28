@@ -84,6 +84,20 @@ class Gagging(discord.Cog):
                     gag_reason: The reason for gagging the user (optional).
                 """
 
+        if changegag(ctx, gag_type, gag_effect, target):
+            if gag_type is not "Unequip":
+                ctx.respond(f'gaged {target.mention}')
+                return None
+
+            elif gag_type is "Unequip":
+                ctx.respond(f'ungaged {target.mention}')
+                return None
+
+        else:
+            ctx.respond(f'gag failed, try again else contact the developer')
+            print(f'changegag failed for {target.mention} by {ctx.author.mention}')
+            return None
+
 
 def setup(bot):
     """Loads the gagging cog."""
