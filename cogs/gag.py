@@ -5,7 +5,19 @@ import json
 file_location = "C:/Users/Jaide/Discord-Bot/Database/Guilds"
 
 class Gagging(discord.Cog):
-    """Cog for gagging commands (NSFW)."""
+    """
+    Handles gagging-related functionality within Discord bot cog.
+
+    This cog is responsible for providing functionality related to gagging,
+    such as retrieving available gag levels and changing the gag settings
+    for a specific user. It manages the gag types and their respective options,
+    as well as interacting with and modifying relevant data stored in JSON files.
+
+    This cog does not provide any text editing functionality, that needs to be done in a seprate cog.
+
+    :ivar bot: The Discord bot instance that this cog belongs to.
+    :type bot: discord.Bot
+    """
 
     def __init__(self, bot):
         """Initializes the gagging cog."""
