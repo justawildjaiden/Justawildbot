@@ -88,7 +88,8 @@ def start_cogs():
     cogs_list = {
         'ping',
         'status',
-        'gag'
+        'gag.interface',
+        'gag.backend'
     }
     for cog in cogs_list:
         bot.load_extension(f'cogs.{cog}')

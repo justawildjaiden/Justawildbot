@@ -1,124 +1,93 @@
-#Importing dependecies
+# Importing dependecies
 import json
-
 import discord
+from enum import Enum
 
-#Defining the file locations
-file_location = "C:/Users/Jaide/Discord-Bot/Database/Guilds"
+# Defining the file locations
+DATABASE_DIRECTORY = "C:/Users/Jaide/Discord-Bot/Database/Guilds"
 
-class Gagging(discord.Cog):
-    """
-    Handles gagging-related functionality within Discord bot cog.
 
-    This cog is responsible for providing functionality related to gagging,
-    such as retrieving available gag levels and changing the gag settings
-    for a specific user. It manages the gag types and their respective options,
-    as well as interacting with and modifying relevant data stored in JSON files.
+class GagType(Enum):
+    UNEQUIP = "Unequip"
+    BALL_GAG = "Ball gag"
+    DILDO_GAG = "Dildo gag"
+    RING_GAG = "Ring gag"
+    REVERSE_DILDO = "Reverse Dildo"
+    SOCK = "Sock"
+    TAPE = "Tape"
+    PACIFIER = "Pacifier"
+    UNDERWEAR = "Underwear"
 
-    This cog does not provide any text editing functionality, that needs to be done in a seprate cog.
 
-    :ivar bot: The Discord bot instance that this cog belongs to.
-    :type bot: discord.Bot
-    """
+class Gagging_Interface(discord.Cog):
+    """Handles gagging-related functionality within Discord bot cog."""
 
     def __init__(self, bot):
         """Initializes the gagging cog."""
         self.bot = bot
 
     async def get_gag_levels(ctx: discord.ApplicationContext):
-        """
-        Depending on what type of gag you put on the user, you get different options of effects
-        """
-        # Get the gag type from user input
-        gag_type = ctx.options['type']
-
-        # Return a list of gag effects based on the gag type
-        if gag_type == "Unequip":
-            return ["None"]
-        elif gag_type == "Ball gag":
-            return ["loose", "tight", "extreme", "faux"]
-        elif gag_type == "Dildo gag":
-            return ["N/A", "faux"]
-        elif gag_type == "Ring gag":
-            return ["not_applicable", "faux"]
-        elif gag_type == "Reverse Dildo":
-            return ["loose", "tight", "faux"]
-        elif gag_type == "Sock":
-            return ["loose", "tight", "faux"]
-        elif gag_type == "Tape":
-            return ["not_applicable", "faux"]
-        elif gag_type == "Pacifier":
-            return ["not_applicable", "faux"]
-        elif gag_type == "Underwear":
-            return ["loose", "tight", "faux"]
-        else:
+        """Returns a list of gag effects based on the gag type."""
+        gag_type_str = ctx.options['type']
+        try:
+            gag_type = GagType(gag_type_str)
+        except ValueError:
             return []
 
-    async def changegag(self,
-                        ctx: discord.ApplicationContext,
-                        gag_type:str,
-                        gag_effect:str,
-                        target:discord.abc.User):
-        """
-            This function changes the gag of the user that is being targeted.
-            It saves this information to the database.
+        gag_effects = {
+            GagType.UNEQUIP: ["None"],
+            GagType.BALL_GAG: ["loose", "tight", "faux"],
+            GagType.DILDO_GAG: ["N/A", "faux"],
+            GagType.RING_GAG: ["N/A", "faux"],
+            GagType.REVERSE_DILDO: ["loose", "tight", "faux"],
+            GagType.SOCK: ["loose", "tight", "faux"],
+            GagType.TAPE: ["N/A", "faux"],
+            GagType.PACIFIER: ["N/A", "faux"],
+            GagType.UNDERWEAR: ["loose", "tight", "faux"],
+        }
+        return gag_effects.get(gag_type, [])
 
-            Args:
-                ctx: The application context.
-                gag_type: The type of gag to apply.
-                gag_effect: The effect of the gag.
-                target: The user to gag.
-
-            Returns:
-                bool: True if the gag was successfully changed, False otherwise.
-        """
-
-        # Attempts to open and read the guild's JSON file
+    def _update_user_gag_data(self, user_gag_data, user_need_data, gag_type_str, gag_effect):
+        """Updates the user's gag data based on the provided gag type and effect."""
         try:
-            with open(f'{file_location}/{ctx.guild.id}.json', "r") as f:
-                guild_data = json.load(f)
+            gag_type = GagType(gag_type_str)
+        except ValueError:
+            return
 
-            # Accesses the user's gag data within the guild data
-            user_gag_data = guild_data['members'][str(target.id)]['gag']
-            user_need_data = guild_data['members'][str(target.id)]['needtotalk']
-
-        # Handles file not found and JSON decode errors
-        except FileNotFoundError:
-            print(f"Error: Member data file not found. guild:{ctx.guild.id} id:{target.id} ")
-            return False
-        except json.JSONDecodeError:
-            print(f"Error: Invalid JSON in member data file. guild:{ctx.guild.id} id:{target.id}")
-            return False
-
-        # Modifies the user's gag data based on the provided gag type and efect
-        if gag_type == "Unequip":
-            user_gag_data['type'] = None    # Sets the type to None
-            user_gag_data['effect'] = None  # Sets the effect to None
-            user_need_data = False          # Sets the need to talk for to False
+        if gag_type == GagType.UNEQUIP:
+            user_gag_data['type'] = None
+            user_gag_data['effect'] = None
+            user_need_data = False
         else:
-            user_gag_data['type'] = gag_type
-            # If the gag effect is "faux", set the effect to None.
-            # and changes the need to be talked for to false
+            user_gag_data['type'] = gag_type.value
             if gag_effect == "faux":
                 user_gag_data['effect'] = None
                 user_need_data = False
-
-            #sets the gag_effect and set need to talk to true
             else:
                 user_gag_data['effect'] = gag_effect
                 user_need_data = True
+        return user_need_data
 
-        # Attempts to write the updated guild data back to the JSON file
+    async def changegag(self, ctx: discord.ApplicationContext, gag_type: str, gag_effect: str,
+                        target: discord.abc.User):
+        """Changes the gag of the targeted user and saves the information to the database."""
         try:
-            with open(f'{file_location}/{ctx.guild.id}.json', "w") as f:
-                json.dump(guild_data, f, indent=4)
-
-        # Handles file not found and JSON decode errors during write operation
-        except FileNotFoundError:
-            print(f"Error: Member data file not found. guild:{ctx.guild.id} id:{target.id} ")
+            with open(f'{DATABASE_DIRECTORY}/{ctx.guild.id}.json', "r") as f:
+                guild_data = json.load(f)
+            user_gag_data = guild_data['members'][str(target.id)]['gag']
+            user_need_data = guild_data['members'][str(target.id)]['needtotalk']
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"Error accessing member data. guild:{ctx.guild.id} id:{target.id} Error: {e}")
             return False
-        except json.JSONDecodeError:
-            print(f"Error: Invalid JSON in member data file. guild:{ctx.guild.id} id:{target.id}")
+
+        user_need_data = self._update_user_gag_data(user_gag_data, user_need_data, gag_type, gag_effect)
+        guild_data['members'][str(target.id)]['needtotalk'] = user_need_data
+
+        try:
+            with open(f'{DATABASE_DIRECTORY}/{ctx.guild.id}.json', "w") as f:
+                json.dump(guild_data, f, indent=4)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"Error writing member data. guild:{ctx.guild.id} id:{target.id} Error: {e}")
             return False
 
         return True
@@ -170,6 +139,10 @@ class Gagging(discord.Cog):
                     gag_reason: The reason for gagging the user (optional).
                 """
 
+        if target.bot:
+            await ctx.respond(content= 'you can\'t gag a bot, you naughty boy', ephemeral=True)
+            return None
+
         # If the gag was successfully changed
         if await self.changegag(ctx, gag_type, gag_effect, target):
             # If the gag type is not "Unequip" (meaning a gag is being applied)
@@ -195,8 +168,9 @@ class Gagging(discord.Cog):
             # Add an optional field for the gag reason if provided
             if gag_reason is not None:
                 embed.add_field(name="Why?", value=str(gag_reason), inline=False)
+
             # Set the thumbnail of the embed using the target's avatar, if available
-            if ctx.author.avatar is not None:
+            if target.avatar.url is not None:
                 try:
                     embed.set_thumbnail(url=target.avatar.url)
                 except:
@@ -208,7 +182,7 @@ class Gagging(discord.Cog):
                     embed.set_footer(text=f"Requested by {ctx.author.name}", icon_url=ctx.author.avatar.url)
                 except:
                     embed.set_footer(text=f"Requested by {ctx.author.name}")  # Fallback in case the avatar URL fails
-            
+
             # Respond with the embed message
             await ctx.respond(embed=embed)
             return None
@@ -217,8 +191,7 @@ class Gagging(discord.Cog):
         else:
             # Create an error embed message
             embed = discord.Embed(colour=discord.Colour.red(), title="ERROR",
-                                  description=f'Something went wrong, please try again.\n{None
-                                  }             If it keeps happening contact the developer.')
+                                  description=f'Something went wrong, please try again.\n If it keeps happening contact the developer.')
             # Respond with the error embed
             await ctx.respond(embed=embed)
             # Print an error message to the console
@@ -228,4 +201,4 @@ class Gagging(discord.Cog):
 
 def setup(bot):
     """Loads the gagging cog."""
-    bot.add_cog(Gagging(bot))
+    bot.add_cog(Gagging_Interface(bot))
